@@ -10,8 +10,8 @@ see http://www.open-mpi.org/doc/v1.6/
 
 Quick Usage
 ===========
-go get .../mth.com/mpi
-go install .../mth.com/mpi
+go get github.com/marcusthierfelder/mpi
+
 
 
 
@@ -39,6 +39,9 @@ simple:
 alltoall:
 	simple example which communicates a small number of integer between all
 	processors
+
+nonblocking:
+	simple send recv example
 
 scalarwave:
 	fancy scalarwave example in 3d with goroutines and mpi decomposition.
