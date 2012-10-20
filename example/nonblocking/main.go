@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"mth.com/mpi"
+	"github.com/marcusthierfelder/mpi"
 )
 
 func main() {
@@ -21,18 +21,18 @@ func main() {
 		rb[i] = 0
 	}
 
-    var request,request2 mpi.Request
-    var status mpi.Status
+	var request, request2 mpi.Request
+	var status mpi.Status
 
-    right := (rank + 1) % size
-    left := rank - 1
-    if left < 0 {
-        left = size - 1
-    }
-    mpi.Irecv_int(&rb, left, 123, mpi.COMM_WORLD, &request);
-    mpi.Isend_int(&sb, right, 123, mpi.COMM_WORLD, &request2);
-    mpi.Wait(&request, &status);
-    mpi.Wait(&request2, &status);
+	right := (rank + 1) % size
+	left := rank - 1
+	if left < 0 {
+		left = size - 1
+	}
+	mpi.Irecv_int(&rb, left, 123, mpi.COMM_WORLD, &request)
+	mpi.Isend_int(&sb, right, 123, mpi.COMM_WORLD, &request2)
+	mpi.Wait(&request, &status)
+	mpi.Wait(&request2, &status)
 
 	fmt.Println(sb, rb)
 

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"mth.com/mpi"
+	"github.com/marcusthierfelder/mpi"
 )
 
 func main() {
@@ -21,9 +21,9 @@ func main() {
 		rb[i] = 0
 	}
 
-	mpi.Alltoall_int(&sb,&rb, mpi.COMM_WORLD)
+	mpi.Alltoall_int(&sb, &rb, mpi.COMM_WORLD)
 
-	fmt.Println(sb, b)
+	fmt.Println(sb, rb)
 
 	mpi.Finalize()
 
