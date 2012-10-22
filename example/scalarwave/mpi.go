@@ -280,6 +280,7 @@ func (grid *Grid) init() {
 	xp := *grid.GetVar("x")
 	yp := *grid.GetVar("y")
 	zp := *grid.GetVar("z")
+	f := *grid.GetVar("f")
 
 	ijk := 0
 	for k:=0; k<grid.box.nxyz[2]; k++ {
@@ -288,6 +289,8 @@ func (grid *Grid) init() {
 				xp[ijk] = grid.box.xyz0[0] + float64(i)*grid.box.dxyz[0]
 				yp[ijk] = grid.box.xyz0[1] + float64(j)*grid.box.dxyz[1]
 				zp[ijk] = grid.box.xyz0[2] + float64(k)*grid.box.dxyz[2]
+
+				f[ijk] = xp[ijk]*xp[ijk]
 
 				ijk++
 			}

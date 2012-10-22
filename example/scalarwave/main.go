@@ -1,12 +1,15 @@
 package main
 
 import (
-	"fmt"
+	_"fmt"
 	"github.com/marcusthierfelder/mpi"
 )
 
 
-
+var (
+	testMPI bool = true
+	rank, size, proc0 int = 8,7,0
+)
 
 type Grid struct {
 	xyz0,dxyz [3]float64	// there are no ghost points included
@@ -44,24 +47,31 @@ type VarList struct {
 
 func main() {
 
-	fmt.Println("---")
+	
 
+	if testMPI == false {
+		mpi.Init()
+		size = mpi.Comm_size(mpi.COMM_WORLD)
+		rank = mpi.Comm_rank(mpi.COMM_WORLD)
+		if rank==0 {
+			proc0 = 1
+		}
+	}
 
 	var grid Grid
 	grid.nxyz = [3]int{21,20,18}
 	grid.dxyz = [3]float64{0.1,0.1,0.1}
 	grid.xyz0 = [3]float64{0.,0.,0.}
 	grid.gh = 1
-	grid.create()
 
+
+	grid.create()
 	grid.init()
 
 
 
-	mpi.Init()
 
-	
-
-	mpi.Finalize()
-
+	if testMPI == false {
+		mpi.Finalize()
+	}
 }
