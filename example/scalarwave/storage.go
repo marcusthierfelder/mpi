@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	_"reflect"
+	_ "reflect"
 )
 
 /* storage stuff */
@@ -14,26 +14,26 @@ func (grid *Grid) AddVar(name string, sync bool) {
 	}
 
 	l := len(grid.field)
- 	tmp := make([](*Field), l+1)
-    copy(tmp, grid.field)
-    grid.field = tmp
+	tmp := make([](*Field), l+1)
+	copy(tmp, grid.field)
+	grid.field = tmp
 
-    f := Field{name:name, sync:sync, 
-    	data:make([]float64, grid.nxyz[0]*grid.nxyz[1]*grid.nxyz[2])}
+	f := Field{name: name, sync: sync,
+		data: make([]float64, grid.nxyz[0]*grid.nxyz[1]*grid.nxyz[2])}
 
-    grid.field[l] = &f
+	grid.field[l] = &f
 }
 
 func (grid *Grid) GetVar(name string) *[]float64 {
 
 	var ptr *[]float64
-	for _,f := range grid.field {
+	for _, f := range grid.field {
 		if f.name == name {
 			ptr = &(f.data)
 		}
 	}
 
-	if (ptr == nil) {
+	if ptr == nil {
 		log.Fatal("var \"" + name + "\" does not exist")
 	}
 	return ptr
