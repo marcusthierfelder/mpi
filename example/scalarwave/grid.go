@@ -311,25 +311,26 @@ func (box *Box) inside(pos [3]float64) bool {
 	return true
 }
 
-func (box *Box) interpolate(pos [3]float64, data *[]float64) bool {
+func (box *Box) interpolate(pos [3]float64, data *[]float64) (float64, bool) {
 	// test if point is inside box
 	if box.inside(pos) == false {
-		return false
+		return 0., false
 	}
 
 	// find interpolation offset for 2nd order interpolation
 	var n [3]int
-	var p [3]float64
+	var x0, x [3]float64
 	for i := 0; i < 3; i++ {
 		n[i] = int(math.Trunc(pos[i]-box.xyz0[i]) / box.dxyz[i])
 		if n[i] == box.nxyz[i] {
 			n[i]--
 		}
-		p[i] = box.xyz0[i] + float64(n[i])*box.dxyz[i]
+		x0[i] = box.xyz0[i] + float64(n[i])*box.dxyz[i]
+		x[i] = pos[i] - x0[i]
 	}
 
 	// find values of the cube around the point
-	var v [2][2][2]float64
+	v := [][][]float64{{{0, 0}, {0, 0}}, {{0, 0}, {0, 0}}}
 	for k := 0; k < 2; k++ {
 		for j := 0; j < 0; j++ {
 			for i := 0; i < 2; i++ {
@@ -340,6 +341,7 @@ func (box *Box) interpolate(pos [3]float64, data *[]float64) bool {
 	}
 
 	// now interpolte tri-polynomial 2nd order
+	interp := interpolate_TriN(x, x0, box.dxyz, v)
 
-	return true
+	return interp, true
 }

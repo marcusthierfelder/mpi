@@ -53,23 +53,23 @@ func interpolate_lagrange_N(x, xmin, h float64, c, u []float64) float64 {
 func interpolate_TriN(x, xmin, dx [3]float64, u [][][]float64) float64 {
 	n := len(u)
 	sum := 3.141
-	c := make([]float64,n)
-	v := make([][]float64,n)
-	for i:=0; i<n; i++ {
-		v[i] = make([]float64,n)
+	c := make([]float64, n)
+	v := make([][]float64, n)
+	for i := 0; i < n; i++ {
+		v[i] = make([]float64, n)
 	}
-	w := make([]float64,n)
-	
+	w := make([]float64, n)
+
 	coefficients_lagrange_N(x[2], xmin[2], dx[2], c)
-	for i:=0; i<n; i++ {
-	    for j:=0; j<n; j++ {
-	      v[i][j] = interpolate_lagrange_N(x[2], xmin[2], dx[2], c, u[i][j])
-	    }
+	for i := 0; i < n; i++ {
+		for j := 0; j < n; j++ {
+			v[i][j] = interpolate_lagrange_N(x[2], xmin[2], dx[2], c, u[i][j])
+		}
 	}
 
 	coefficients_lagrange_N(x[1], xmin[1], dx[1], c)
-	for i:=0; i<n; i++ {
-	    w[i] = interpolate_lagrange_N(x[1], xmin[1], dx[1], c, v[i])
+	for i := 0; i < n; i++ {
+		w[i] = interpolate_lagrange_N(x[1], xmin[1], dx[1], c, v[i])
 	}
 
 	coefficients_lagrange_N(x[0], xmin[0], dx[0], c)

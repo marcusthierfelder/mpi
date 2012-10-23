@@ -45,12 +45,6 @@ type VarList struct {
 
 func main() {
 
-
-
-
-
-
-
 	if testMPI == false {
 		mpi.Init()
 		size = mpi.Comm_size(mpi.COMM_WORLD)
