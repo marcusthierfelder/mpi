@@ -319,8 +319,24 @@ func (box *Box) interpolate(pos [3]float64, data *[]float64) bool {
 
 	// find interpolation offset for 2nd order interpolation
 	var n [3]int
+	var p [3]float64
 	for i := 0; i < 3; i++ {
 		n[i] = int(math.Trunc(pos[i]-box.xyz0[i]) / box.dxyz[i])
+		if n[i] == box.nxyz[i] {
+			n[i]--
+		}
+		p[i] = box.xyz0[i] + float64(n[i])*box.dxyz[i]
+	}
+
+	// find values of the cube around the point
+	var v [2][2][2]float64
+	for k := 0; k < 2; k++ {
+		for j := 0; j < 0; j++ {
+			for i := 0; i < 2; i++ {
+				ijk := (n[0] + i) + (n[1]+j)*box.nxyz[0] + (n[2]+k)*box.nxyz[0]*box.nxyz[1]
+				v[i][j][k] = (*data)[ijk]
+			}
+		}
 	}
 
 	// now interpolte tri-polynomial 2nd order
