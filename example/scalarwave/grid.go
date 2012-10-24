@@ -128,7 +128,7 @@ func (grid *Grid) create() {
 		grid.box.xyz0[0] += grid.dxyz[0] * float64(g[i][0])
 	}
 	grid.box.xyz0[0] -= grid.dxyz[0] * float64(grid.gh)
-	grid.box.xyz1[0] = grid.box.xyz0[0] + float64(grid.box.nxyz[0])*grid.dxyz[0]
+	grid.box.xyz1[0] = grid.box.xyz0[0] + float64(grid.box.nxyz[0]-1)*grid.dxyz[0]
 
 	grid.box.nxyz[1] = g[rank][1] + 2*grid.gh
 	grid.box.dxyz[1] = grid.dxyz[1]
@@ -137,7 +137,7 @@ func (grid *Grid) create() {
 		grid.box.xyz0[1] += grid.dxyz[1] * float64(g[i][1])
 	}
 	grid.box.xyz0[1] -= grid.dxyz[1] * float64(grid.gh)
-	grid.box.xyz1[1] = grid.box.xyz0[1] + float64(grid.box.nxyz[1])*grid.dxyz[1]
+	grid.box.xyz1[1] = grid.box.xyz0[1] + float64(grid.box.nxyz[1]-1)*grid.dxyz[1]
 
 	grid.box.nxyz[2] = g[rank][2] + 2*grid.gh
 	grid.box.dxyz[2] = grid.dxyz[2]
@@ -146,7 +146,7 @@ func (grid *Grid) create() {
 		grid.box.xyz0[2] += grid.dxyz[2] * float64(g[i][2])
 	}
 	grid.box.xyz0[2] -= grid.dxyz[2] * float64(grid.gh)
-	grid.box.xyz1[2] = grid.box.xyz0[2] + float64(grid.box.nxyz[2])*grid.dxyz[2]
+	grid.box.xyz1[2] = grid.box.xyz0[2] + float64(grid.box.nxyz[2]-1)*grid.dxyz[2]
 
 	fmt.Println(grid.box)
 
@@ -309,9 +309,9 @@ func (box *Box) inside(pos [3]float64) bool {
 	if pos[0] < box.xyz0[0]-eps ||
 		pos[1] < box.xyz0[1]-eps ||
 		pos[2] < box.xyz0[2]-eps ||
-		pos[0] > box.xyz0[0]+float64(box.nxyz[0])*box.dxyz[0]+eps ||
-		pos[1] > box.xyz0[1]+float64(box.nxyz[1])*box.dxyz[1]+eps ||
-		pos[2] > box.xyz0[2]+float64(box.nxyz[2])*box.dxyz[2]+eps {
+		pos[0] > box.xyz0[0]+float64(box.nxyz[0]-1)*box.dxyz[0]+eps ||
+		pos[1] > box.xyz0[1]+float64(box.nxyz[1]-1)*box.dxyz[1]+eps ||
+		pos[2] > box.xyz0[2]+float64(box.nxyz[2]-1)*box.dxyz[2]+eps {
 		return false
 	}
 	return true
@@ -333,6 +333,7 @@ func (box *Box) interpolate(pos [3]float64, data *[]float64) (float64, bool) {
 		n[i] = int(math.Trunc((pos[i] - box.xyz0[i]) / box.dxyz[i]))
 		if n[i] == box.nxyz[i] {
 			n[i]--
+			//return 0., false
 		}
 		x0[i] = box.xyz0[i] + float64(n[i])*box.dxyz[i]
 	}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/marcusthierfelder/mpi"
 	"io"
 	"log"
 	"os"
@@ -29,9 +30,15 @@ func (grid *Grid) output_1d(data string, file string, d int) {
 		v, b := grid.box.interpolate(pos, ptr)
 		buffer[i], buffer[grid.nxyz[d]+i] = v, float64(btoi(b))
 	}
-	fmt.Println(x, buffer)
+	//fmt.Println(x, buffer)
 
 	/* find data using interpolation */
+	recvbuf := make([]float64, 2*grid.nxyz[d])
+	mpi.Allreduce_float64(&buffer, &recvbuf, mpi.SUM, mpi.COMM_WORLD)
+	for i := 0; i < grid.nxyz[d]; i++ {
+		buffer[i] = recvbuf[i] / recvbuf[i+grid.nxyz[d]]
+	}
+	//fmt.Println(recvbuf)
 
 	/* create or append? */
 	if proc0 {

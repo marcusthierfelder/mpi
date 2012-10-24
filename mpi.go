@@ -82,6 +82,18 @@ func Allreduce_int(sendbuf, recvbuf *[]int, op C.MPI_Op, comm C.MPI_Comm) {
 	}
 }
 
+func Allreduce_float64(sendbuf, recvbuf *[]float64, op C.MPI_Op, comm C.MPI_Comm) {
+
+	// mpi communication call
+	err := C.MPI_Allreduce(
+		unsafe.Pointer(&(*sendbuf)[0]), unsafe.Pointer(&(*recvbuf)[0]),
+		C.int(len(*sendbuf)), FLOAT64, op, comm)
+
+	if err != 0 {
+		log.Fatal(err)
+	}
+}
+
 func Alltoall_int(sendbuf, recvbuf *[]int, comm C.MPI_Comm) {
 	lsend := len(*sendbuf)
 	lrecv := len(*recvbuf)
