@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/marcusthierfelder/mpi"
 	"log"
 	"math"
-	//"mth.com/mpi"
+
+	"os"
 )
 
 var (
@@ -197,8 +199,6 @@ func (grid *Grid) create() {
 	for i := 0; i < 6; i++ {
 		grid.box.comm.send[i] = make([]int, grid.box.comm.npts[i])
 		grid.box.comm.recv[i] = make([]int, grid.box.comm.npts[i])
-		grid.box.comm.buffer[i] = make([]float64, grid.box.comm.npts[i])
-
 	}
 
 	ijk0 := [12]int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
@@ -301,7 +301,46 @@ func (grid *Grid) init() {
 	}
 }
 
+/* pure mpi synchronization */
 func (grid *Grid) sync_all() {
+	grid.sync_one(grid.GetVar("f"))
+
+}
+
+func (grid *Grid) sync_one(data *[]float64) {
+	c := grid.box.comm
+	mpi.Barrier(mpi.COMM_WORLD)
+	/* go through all 6 sides seperatly, first x-dir both sides,
+	then the other sides */
+	for d := 0; d < 6; d = d + 2 {
+		// fist one direction
+		sendbuf := make([]float64, c.npts[d])
+		recvbuf := make([]float64, c.npts[d+1])
+		if c.neighbour[d] != -1 {
+			for i := 0; i < c.npts[d]; i++ {
+				sendbuf[i] = (*data)[c.send[d][i]]
+			}
+		}
+
+		var request1, request2 mpi.Request
+		if c.neighbour[d+1] != -1 {
+			mpi.Irecv_float64(&recvbuf, c.neighbour[d+1], 123, mpi.COMM_WORLD, &request1)
+			fmt.Println("recv---", rank, c.neighbour[d+1], recvbuf)
+		}
+		if c.neighbour[d] != -1 {
+			fmt.Println("send---", rank, c.neighbour[d], sendbuf)
+			mpi.Isend_float64(&sendbuf, c.neighbour[d], 123, mpi.COMM_WORLD, &request2)
+		}
+
+		if c.neighbour[d+1] != -1 {
+			for i := 0; i < c.npts[d]; i++ {
+				(*data)[c.recv[d+1][i]] = recvbuf[i]
+			}
+		}
+
+		mpi.Barrier(mpi.COMM_WORLD)
+		os.Exit(1)
+	}
 }
 
 /* box stuff */

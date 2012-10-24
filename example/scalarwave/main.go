@@ -34,10 +34,9 @@ type Field struct {
 	data []float64
 }
 type Comm struct {
-	neighbour  [6]int       // number of touching processor
-	npts       [6]int       // number of points which have to be syncd
-	send, recv [6][]int     // stack of position(ijk) to sync efficiently 
-	buffer     [6][]float64 // buffer which has to be filled and will be copied	
+	neighbour  [6]int   // number of touching processor
+	npts       [6]int   // number of points which have to be syncd
+	send, recv [6][]int // stack of position(ijk) to sync efficiently 
 }
 
 type VarList struct {
@@ -56,12 +55,15 @@ func main() {
 
 	var grid Grid
 	grid.nxyz = [3]int{21, 20, 18}
-	grid.dxyz = [3]float64{0.1, 0.1, 0.1}
+	grid.dxyz = [3]float64{1, 1, 1}
 	grid.xyz0 = [3]float64{0., 0., 0.}
 	grid.gh = 1
 
 	grid.create()
 	grid.init()
+
+	grid.sync_all()
+
 	grid.output()
 
 	if testMPI == false {

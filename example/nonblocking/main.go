@@ -15,10 +15,14 @@ func main() {
 
 	sb := make([]int, chunk)
 	rb := make([]int, chunk)
+	sbf := make([]float64, chunk)
+	rbf := make([]float64, chunk)
 
 	for i := 0; i < chunk; i++ {
 		sb[i] = rank + 1
 		rb[i] = 0
+		sbf[i] = float64(rank + 1)
+		rbf[i] = 0.
 	}
 
 	var request, request2 mpi.Request
@@ -35,6 +39,15 @@ func main() {
 	mpi.Wait(&request2, &status)
 
 	fmt.Println(sb, rb)
+
+
+	mpi.Irecv_float64(&rbf, left, 1234, mpi.COMM_WORLD, &request)
+	mpi.Isend_float64(&sbf, right, 1234, mpi.COMM_WORLD, &request2)
+	mpi.Wait(&request, &status)
+	mpi.Wait(&request2, &status)
+
+	fmt.Println(sbf, rbf)
+
 
 	mpi.Finalize()
 

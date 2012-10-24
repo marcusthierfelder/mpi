@@ -30,7 +30,7 @@ func (grid *Grid) output_1d(data string, file string, d int) {
 		v, b := grid.box.interpolate(pos, ptr)
 		buffer[i], buffer[grid.nxyz[d]+i] = v, float64(btoi(b))
 	}
-	//fmt.Println(x, buffer)
+	fmt.Println(rank, buffer[:grid.nxyz[d]])
 
 	/* find data using interpolation */
 	recvbuf := make([]float64, 2*grid.nxyz[d])
