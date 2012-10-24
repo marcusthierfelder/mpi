@@ -19,7 +19,7 @@ func (grid *Grid) AddVar(name string, sync bool) {
 	grid.field = tmp
 
 	f := Field{name: name, sync: sync,
-		data: make([]float64, grid.nxyz[0]*grid.nxyz[1]*grid.nxyz[2])}
+		data: make([]float64, grid.box.nxyz[0]*grid.box.nxyz[1]*grid.box.nxyz[2])}
 
 	grid.field[l] = &f
 }

@@ -113,11 +113,12 @@ func splitGrid(nxyz [3]int, nproc int) ([][]int, [3]int) {
 
 func (grid *Grid) create() {
 	defer un(trace("createGrid"))
+	fmt.Println(rank, size, proc0)
 
-	size := 8 //mpi.Comm_size(mpi.COMM_WORLD)
-	rank := 7 //mpi.Comm_rank(mpi.COMM_WORLD)
+	//size := 8 //mpi.Comm_size(mpi.COMM_WORLD)
+	//rank := 7 //mpi.Comm_rank(mpi.COMM_WORLD)
 	g, nijk := splitGrid(grid.nxyz, size)
-	//fmt.Println(g,nijk)
+	fmt.Println(g, nijk)
 
 	// set box sizes for each processor
 	grid.box.nxyz[0] = g[rank][0] + 2*grid.gh
@@ -127,6 +128,7 @@ func (grid *Grid) create() {
 		grid.box.xyz0[0] += grid.dxyz[0] * float64(g[i][0])
 	}
 	grid.box.xyz0[0] -= grid.dxyz[0] * float64(grid.gh)
+	grid.box.xyz1[0] = grid.box.xyz0[0] + float64(grid.box.nxyz[0])*grid.dxyz[0]
 
 	grid.box.nxyz[1] = g[rank][1] + 2*grid.gh
 	grid.box.dxyz[1] = grid.dxyz[1]
@@ -135,6 +137,7 @@ func (grid *Grid) create() {
 		grid.box.xyz0[1] += grid.dxyz[1] * float64(g[i][1])
 	}
 	grid.box.xyz0[1] -= grid.dxyz[1] * float64(grid.gh)
+	grid.box.xyz1[1] = grid.box.xyz0[1] + float64(grid.box.nxyz[1])*grid.dxyz[1]
 
 	grid.box.nxyz[2] = g[rank][2] + 2*grid.gh
 	grid.box.dxyz[2] = grid.dxyz[2]
@@ -143,6 +146,9 @@ func (grid *Grid) create() {
 		grid.box.xyz0[2] += grid.dxyz[2] * float64(g[i][2])
 	}
 	grid.box.xyz0[2] -= grid.dxyz[2] * float64(grid.gh)
+	grid.box.xyz1[2] = grid.box.xyz0[2] + float64(grid.box.nxyz[2])*grid.dxyz[2]
+
+	fmt.Println(grid.box)
 
 	// find neighbours
 	i := rank % nijk[0]
@@ -287,7 +293,7 @@ func (grid *Grid) init() {
 				yp[ijk] = grid.box.xyz0[1] + float64(j)*grid.box.dxyz[1]
 				zp[ijk] = grid.box.xyz0[2] + float64(k)*grid.box.dxyz[2]
 
-				f[ijk] = xp[ijk] * xp[ijk]
+				f[ijk] = xp[ijk]*xp[ijk] + 1.
 
 				ijk++
 			}
@@ -312,6 +318,9 @@ func (box *Box) inside(pos [3]float64) bool {
 }
 
 func (box *Box) interpolate(pos [3]float64, data *[]float64) (float64, bool) {
+
+	//fmt.Println(box.xyz0, box.xyz1, pos)
+
 	// test if point is inside box
 	if box.inside(pos) == false {
 		return 0., false
@@ -319,20 +328,19 @@ func (box *Box) interpolate(pos [3]float64, data *[]float64) (float64, bool) {
 
 	// find interpolation offset for 2nd order interpolation
 	var n [3]int
-	var x0, x [3]float64
+	var x0 [3]float64
 	for i := 0; i < 3; i++ {
-		n[i] = int(math.Trunc(pos[i]-box.xyz0[i]) / box.dxyz[i])
+		n[i] = int(math.Trunc((pos[i] - box.xyz0[i]) / box.dxyz[i]))
 		if n[i] == box.nxyz[i] {
 			n[i]--
 		}
 		x0[i] = box.xyz0[i] + float64(n[i])*box.dxyz[i]
-		x[i] = pos[i] - x0[i]
 	}
 
 	// find values of the cube around the point
 	v := [][][]float64{{{0, 0}, {0, 0}}, {{0, 0}, {0, 0}}}
 	for k := 0; k < 2; k++ {
-		for j := 0; j < 0; j++ {
+		for j := 0; j < 2; j++ {
 			for i := 0; i < 2; i++ {
 				ijk := (n[0] + i) + (n[1]+j)*box.nxyz[0] + (n[2]+k)*box.nxyz[0]*box.nxyz[1]
 				v[i][j][k] = (*data)[ijk]
@@ -341,7 +349,7 @@ func (box *Box) interpolate(pos [3]float64, data *[]float64) (float64, bool) {
 	}
 
 	// now interpolte tri-polynomial 2nd order
-	interp := interpolate_TriN(x, x0, box.dxyz, v)
+	interp := interpolate_TriN(pos, x0, box.dxyz, v)
 
 	return interp, true
 }

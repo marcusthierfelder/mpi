@@ -11,20 +11,25 @@ import (
 func (grid *Grid) output() {
 	defer un(trace("output"))
 
-	grid.output_1d("x", "f.x", 0)
+	grid.output_1d("f", "f.x", 0)
 }
 
 /* this a a very slow and lazy implementation for x-direction */
 func (grid *Grid) output_1d(data string, file string, d int) {
 
 	/* init buffer */
-	var buffer [2][]float64
-	buffer[0] = make([]float64, grid.nxyz[d])
-	buffer[1] = make([]float64, grid.nxyz[d])
+	buffer := make([]float64, 2*grid.nxyz[d])
+	x := make([]float64, grid.nxyz[d])
+	ptr := grid.GetVar(data)
+	pos := [3]float64{0., 0., 0.}
 
 	for i := 0; i < grid.nxyz[d]; i++ {
-		buffer[0][i] = grid.xyz0[d] + float64(i)*grid.dxyz[d]
+		x[i] = grid.xyz0[d] + float64(i)*grid.dxyz[d]
+		pos[d] = x[i]
+		v, b := grid.box.interpolate(pos, ptr)
+		buffer[i], buffer[grid.nxyz[d]+i] = v, float64(btoi(b))
 	}
+	fmt.Println(x, buffer)
 
 	/* find data using interpolation */
 
@@ -46,7 +51,7 @@ func (grid *Grid) output_1d(data string, file string, d int) {
 		fmt.Println("write " + file)
 		io.WriteString(f, fmt.Sprintf("#Time = %e\n", grid.time))
 		for i := 0; i < grid.nxyz[d]; i++ {
-			io.WriteString(f, fmt.Sprintf("%e %e\n", buffer[0][i], buffer[1][i]))
+			io.WriteString(f, fmt.Sprintf("%e %e\n", x[i], buffer[i]))
 		}
 		io.WriteString(f, "\n")
 

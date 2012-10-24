@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	testMPI    bool = true
+	testMPI    bool = false
 	rank, size int  = 0, 8
 	proc0      bool = false
 )
@@ -21,7 +21,8 @@ type Grid struct {
 	field [](*Field) // data storage
 }
 type Box struct {
-	xyz0, dxyz [3]float64
+	xyz0, xyz1 [3]float64
+	dxyz       [3]float64
 	nxyz       [3]int
 	noff       [3]int
 

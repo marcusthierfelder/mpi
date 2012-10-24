@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	_ "os"
 )
 
 var pr = true
@@ -51,6 +52,10 @@ func interpolate_lagrange_N(x, xmin, h float64, c, u []float64) float64 {
 }
 
 func interpolate_TriN(x, xmin, dx [3]float64, u [][][]float64) float64 {
+
+	//fmt.Println("-----")
+	//fmt.Println(x, xmin, dx)
+
 	n := len(u)
 	sum := 3.141
 	c := make([]float64, n)
@@ -60,20 +65,35 @@ func interpolate_TriN(x, xmin, dx [3]float64, u [][][]float64) float64 {
 	}
 	w := make([]float64, n)
 
+	//fmt.Println(u)
+
 	coefficients_lagrange_N(x[2], xmin[2], dx[2], c)
 	for i := 0; i < n; i++ {
 		for j := 0; j < n; j++ {
 			v[i][j] = interpolate_lagrange_N(x[2], xmin[2], dx[2], c, u[i][j])
 		}
 	}
+	//fmt.Println(c,v)
 
 	coefficients_lagrange_N(x[1], xmin[1], dx[1], c)
 	for i := 0; i < n; i++ {
 		w[i] = interpolate_lagrange_N(x[1], xmin[1], dx[1], c, v[i])
 	}
+	//fmt.Println(c,w)
 
 	coefficients_lagrange_N(x[0], xmin[0], dx[0], c)
 	sum = interpolate_lagrange_N(x[0], xmin[0], dx[0], c, w)
 
+	//fmt.Println(c,sum)
+	//os.Exit(1)
+
 	return sum
+}
+
+/* some other stuff */
+func btoi(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
 }
