@@ -212,8 +212,19 @@ func Isend_float64(sendbuf *[]float64, dest, tag int, comm C.MPI_Comm, request *
 
 func Recv_int(recvbuf *[]int, source, tag int, comm C.MPI_Comm) {
 
-	err := C.MPI_Irecv(
+	err := C.MPI_Recv(
 		unsafe.Pointer(&(*recvbuf)[0]), C.int(len(*recvbuf)), INT,
+		C.int(source), C.int(tag), comm, nil)
+
+	if err != 0 {
+		log.Fatal(err)
+	}
+}
+
+func Recv_float64(recvbuf *[]float64, source, tag int, comm C.MPI_Comm) {
+
+	err := C.MPI_Recv(
+		unsafe.Pointer(&(*recvbuf)[0]), C.int(len(*recvbuf)), FLOAT64,
 		C.int(source), C.int(tag), comm, nil)
 
 	if err != 0 {
@@ -225,6 +236,17 @@ func Send_int(sendbuf *[]int, dest, tag int, comm C.MPI_Comm) {
 
 	err := C.MPI_Send(
 		unsafe.Pointer(&(*sendbuf)[0]), C.int(len(*sendbuf)), INT,
+		C.int(dest), C.int(tag), comm)
+
+	if err != 0 {
+		log.Fatal(err)
+	}
+}
+
+func Send_float64(sendbuf *[]float64, dest, tag int, comm C.MPI_Comm) {
+
+	err := C.MPI_Send(
+		unsafe.Pointer(&(*sendbuf)[0]), C.int(len(*sendbuf)), FLOAT64,
 		C.int(dest), C.int(tag), comm)
 
 	if err != 0 {

@@ -6,7 +6,7 @@ import (
 	"log"
 	"math"
 
-	"os"
+	_"os"
 )
 
 var (
@@ -310,36 +310,40 @@ func (grid *Grid) sync_all() {
 func (grid *Grid) sync_one(data *[]float64) {
 	c := grid.box.comm
 	mpi.Barrier(mpi.COMM_WORLD)
+
 	/* go through all 6 sides seperatly, first x-dir both sides,
 	then the other sides */
-	for d := 0; d < 6; d = d + 2 {
+	for d := 0; d < 6; d++ {
+		e := (d/2)*2 + 1 - d%2;
+
 		// fist one direction
 		sendbuf := make([]float64, c.npts[d])
-		recvbuf := make([]float64, c.npts[d+1])
+		recvbuf := make([]float64, c.npts[e])
 		if c.neighbour[d] != -1 {
 			for i := 0; i < c.npts[d]; i++ {
 				sendbuf[i] = (*data)[c.send[d][i]]
 			}
 		}
 
-		var request1, request2 mpi.Request
-		if c.neighbour[d+1] != -1 {
-			mpi.Irecv_float64(&recvbuf, c.neighbour[d+1], 123, mpi.COMM_WORLD, &request1)
-			fmt.Println("recv---", rank, c.neighbour[d+1], recvbuf)
+		if c.neighbour[e] != -1 {
+			mpi.Recv_float64(&recvbuf, c.neighbour[e], 123, mpi.COMM_WORLD)
+			//mpi.Wait(&request1, &status)
+			fmt.Println("recv---", rank, c.neighbour[e], recvbuf)
 		}
 		if c.neighbour[d] != -1 {
 			fmt.Println("send---", rank, c.neighbour[d], sendbuf)
-			mpi.Isend_float64(&sendbuf, c.neighbour[d], 123, mpi.COMM_WORLD, &request2)
+			mpi.Send_float64(&sendbuf, c.neighbour[d], 123, mpi.COMM_WORLD)
+			//mpi.Wait(&request2, &status)
 		}
 
-		if c.neighbour[d+1] != -1 {
-			for i := 0; i < c.npts[d]; i++ {
-				(*data)[c.recv[d+1][i]] = recvbuf[i]
+		if c.neighbour[e] != -1 {
+			for i := 0; i < c.npts[e]; i++ {
+				(*data)[c.recv[e][i]] = recvbuf[i]
 			}
 		}
 
 		mpi.Barrier(mpi.COMM_WORLD)
-		os.Exit(1)
+
 	}
 }
 

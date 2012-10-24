@@ -54,7 +54,7 @@ func main() {
 	fmt.Println(rank, proc0)
 
 	var grid Grid
-	grid.nxyz = [3]int{21, 20, 18}
+	grid.nxyz = [3]int{21, 6, 6}
 	grid.dxyz = [3]float64{1, 1, 1}
 	grid.xyz0 = [3]float64{0., 0., 0.}
 	grid.gh = 1
