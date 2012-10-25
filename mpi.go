@@ -70,33 +70,33 @@ func Abort(comm C.MPI_Comm, errorcode int) {
 	}
 }
 
-func Allreduce_int(sendbuf, recvbuf *[]int, op C.MPI_Op, comm C.MPI_Comm) {
+func Allreduce_int(sendbuf, recvbuf []int, op C.MPI_Op, comm C.MPI_Comm) {
 
 	// mpi communication call
 	err := C.MPI_Allreduce(
-		unsafe.Pointer(&(*sendbuf)[0]), unsafe.Pointer(&(*recvbuf)[0]),
-		C.int(len(*sendbuf)), INT, op, comm)
+		unsafe.Pointer(&sendbuf[0]), unsafe.Pointer(&recvbuf[0]),
+		C.int(len(sendbuf)), INT, op, comm)
 
 	if err != 0 {
 		log.Fatal(err)
 	}
 }
 
-func Allreduce_float64(sendbuf, recvbuf *[]float64, op C.MPI_Op, comm C.MPI_Comm) {
+func Allreduce_float64(sendbuf, recvbuf []float64, op C.MPI_Op, comm C.MPI_Comm) {
 
 	// mpi communication call
 	err := C.MPI_Allreduce(
-		unsafe.Pointer(&(*sendbuf)[0]), unsafe.Pointer(&(*recvbuf)[0]),
-		C.int(len(*sendbuf)), FLOAT64, op, comm)
+		unsafe.Pointer(&sendbuf[0]), unsafe.Pointer(&recvbuf[0]),
+		C.int(len(sendbuf)), FLOAT64, op, comm)
 
 	if err != 0 {
 		log.Fatal(err)
 	}
 }
 
-func Alltoall_int(sendbuf, recvbuf *[]int, comm C.MPI_Comm) {
-	lsend := len(*sendbuf)
-	lrecv := len(*recvbuf)
+func Alltoall_int(sendbuf, recvbuf []int, comm C.MPI_Comm) {
+	lsend := len(sendbuf)
+	lrecv := len(recvbuf)
 	size := Comm_size(comm)
 	if lsend%size != 0 || lrecv%size != 0 {
 		log.Fatal("Alltoall: the bufferlength is not consistent with the number of processors")
@@ -104,8 +104,8 @@ func Alltoall_int(sendbuf, recvbuf *[]int, comm C.MPI_Comm) {
 
 	// mpi communication call
 	err := C.MPI_Alltoall(
-		unsafe.Pointer(&(*sendbuf)[0]), C.int(lsend/size), INT,
-		unsafe.Pointer(&(*recvbuf)[0]), C.int(lrecv/size), INT,
+		unsafe.Pointer(&sendbuf[0]), C.int(lsend/size), INT,
+		unsafe.Pointer(&recvbuf[0]), C.int(lrecv/size), INT,
 		comm)
 
 	if err != 0 {
@@ -113,9 +113,9 @@ func Alltoall_int(sendbuf, recvbuf *[]int, comm C.MPI_Comm) {
 	}
 }
 
-func Alltoall_float64(sendbuf, recvbuf *[]float64, comm C.MPI_Comm) {
-	lsend := len(*sendbuf)
-	lrecv := len(*recvbuf)
+func Alltoall_float64(sendbuf, recvbuf []float64, comm C.MPI_Comm) {
+	lsend := len(sendbuf)
+	lrecv := len(recvbuf)
 	size := Comm_size(comm)
 	if lsend%size != 0 || lrecv%size != 0 {
 		log.Fatal("Alltoall: the bufferlength is not consistent with the number of processors")
@@ -123,8 +123,8 @@ func Alltoall_float64(sendbuf, recvbuf *[]float64, comm C.MPI_Comm) {
 
 	// mpi communication call
 	err := C.MPI_Alltoall(
-		unsafe.Pointer(&(*sendbuf)[0]), C.int(lsend/size), FLOAT64,
-		unsafe.Pointer(&(*recvbuf)[0]), C.int(lrecv/size), FLOAT64,
+		unsafe.Pointer(&sendbuf[0]), C.int(lsend/size), FLOAT64,
+		unsafe.Pointer(&recvbuf[0]), C.int(lrecv/size), FLOAT64,
 		comm)
 
 	if err != 0 {
@@ -166,10 +166,10 @@ func Finalize() {
 	}
 }
 
-func Irecv_int(recvbuf *[]int, source, tag int, comm C.MPI_Comm, request *Request) {
+func Irecv_int(recvbuf []int, source, tag int, comm C.MPI_Comm, request *Request) {
 
 	err := C.MPI_Irecv(
-		unsafe.Pointer(&(*recvbuf)[0]), C.int(len(*recvbuf)), INT,
+		unsafe.Pointer(&recvbuf[0]), C.int(len(recvbuf)), INT,
 		C.int(source), C.int(tag), comm, (*C.MPI_Request)(request))
 
 	if err != 0 {
@@ -177,10 +177,10 @@ func Irecv_int(recvbuf *[]int, source, tag int, comm C.MPI_Comm, request *Reques
 	}
 }
 
-func Irecv_float64(recvbuf *[]float64, source, tag int, comm C.MPI_Comm, request *Request) {
+func Irecv_float64(recvbuf []float64, source, tag int, comm C.MPI_Comm, request *Request) {
 
 	err := C.MPI_Irecv(
-		unsafe.Pointer(&(*recvbuf)[0]), C.int(len(*recvbuf)), FLOAT64,
+		unsafe.Pointer(&recvbuf[0]), C.int(len(recvbuf)), FLOAT64,
 		C.int(source), C.int(tag), comm, (*C.MPI_Request)(request))
 
 	if err != 0 {
@@ -188,10 +188,10 @@ func Irecv_float64(recvbuf *[]float64, source, tag int, comm C.MPI_Comm, request
 	}
 }
 
-func Isend_int(sendbuf *[]int, dest, tag int, comm C.MPI_Comm, request *Request) {
+func Isend_int(sendbuf []int, dest, tag int, comm C.MPI_Comm, request *Request) {
 
 	err := C.MPI_Isend(
-		unsafe.Pointer(&(*sendbuf)[0]), C.int(len(*sendbuf)), INT,
+		unsafe.Pointer(&sendbuf[0]), C.int(len(sendbuf)), INT,
 		C.int(dest), C.int(tag), comm, (*C.MPI_Request)(request))
 
 	if err != 0 {
@@ -199,10 +199,10 @@ func Isend_int(sendbuf *[]int, dest, tag int, comm C.MPI_Comm, request *Request)
 	}
 }
 
-func Isend_float64(sendbuf *[]float64, dest, tag int, comm C.MPI_Comm, request *Request) {
+func Isend_float64(sendbuf []float64, dest, tag int, comm C.MPI_Comm, request *Request) {
 
 	err := C.MPI_Isend(
-		unsafe.Pointer(&(*sendbuf)[0]), C.int(len(*sendbuf)), FLOAT64,
+		unsafe.Pointer(&sendbuf[0]), C.int(len(sendbuf)), FLOAT64,
 		C.int(dest), C.int(tag), comm, (*C.MPI_Request)(request))
 
 	if err != 0 {
@@ -210,10 +210,10 @@ func Isend_float64(sendbuf *[]float64, dest, tag int, comm C.MPI_Comm, request *
 	}
 }
 
-func Recv_int(recvbuf *[]int, source, tag int, comm C.MPI_Comm) {
+func Recv_int(recvbuf []int, source, tag int, comm C.MPI_Comm) {
 
 	err := C.MPI_Recv(
-		unsafe.Pointer(&(*recvbuf)[0]), C.int(len(*recvbuf)), INT,
+		unsafe.Pointer(&recvbuf[0]), C.int(len(recvbuf)), INT,
 		C.int(source), C.int(tag), comm, nil)
 
 	if err != 0 {
@@ -221,10 +221,10 @@ func Recv_int(recvbuf *[]int, source, tag int, comm C.MPI_Comm) {
 	}
 }
 
-func Recv_float64(recvbuf *[]float64, source, tag int, comm C.MPI_Comm) {
+func Recv_float64(recvbuf []float64, source, tag int, comm C.MPI_Comm) {
 
 	err := C.MPI_Recv(
-		unsafe.Pointer(&(*recvbuf)[0]), C.int(len(*recvbuf)), FLOAT64,
+		unsafe.Pointer(&recvbuf[0]), C.int(len(recvbuf)), FLOAT64,
 		C.int(source), C.int(tag), comm, nil)
 
 	if err != 0 {
@@ -232,10 +232,10 @@ func Recv_float64(recvbuf *[]float64, source, tag int, comm C.MPI_Comm) {
 	}
 }
 
-func Send_int(sendbuf *[]int, dest, tag int, comm C.MPI_Comm) {
+func Send_int(sendbuf []int, dest, tag int, comm C.MPI_Comm) {
 
 	err := C.MPI_Send(
-		unsafe.Pointer(&(*sendbuf)[0]), C.int(len(*sendbuf)), INT,
+		unsafe.Pointer(&sendbuf[0]), C.int(len(sendbuf)), INT,
 		C.int(dest), C.int(tag), comm)
 
 	if err != 0 {
@@ -243,10 +243,10 @@ func Send_int(sendbuf *[]int, dest, tag int, comm C.MPI_Comm) {
 	}
 }
 
-func Send_float64(sendbuf *[]float64, dest, tag int, comm C.MPI_Comm) {
+func Send_float64(sendbuf []float64, dest, tag int, comm C.MPI_Comm) {
 
 	err := C.MPI_Send(
-		unsafe.Pointer(&(*sendbuf)[0]), C.int(len(*sendbuf)), FLOAT64,
+		unsafe.Pointer(&sendbuf[0]), C.int(len(sendbuf)), FLOAT64,
 		C.int(dest), C.int(tag), comm)
 
 	if err != 0 {

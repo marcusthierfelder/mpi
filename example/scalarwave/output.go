@@ -34,7 +34,7 @@ func (grid *Grid) output_1d(data string, file string, d int) {
 
 	/* find data using interpolation */
 	recvbuf := make([]float64, 2*grid.nxyz[d])
-	mpi.Allreduce_float64(&buffer, &recvbuf, mpi.SUM, mpi.COMM_WORLD)
+	mpi.Allreduce_float64(buffer, recvbuf, mpi.SUM, mpi.COMM_WORLD)
 	for i := 0; i < grid.nxyz[d]; i++ {
 		buffer[i] = recvbuf[i] / recvbuf[i+grid.nxyz[d]]
 	}

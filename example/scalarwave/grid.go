@@ -321,24 +321,24 @@ func (grid *Grid) sync_one(data []float64) {
 		recvbuf := make([]float64, c.npts[e])
 		if c.neighbour[d] != -1 {
 			for i := 0; i < c.npts[d]; i++ {
-				sendbuf[i] = (*data)[c.send[d][i]]
+				sendbuf[i] = data[c.send[d][i]]
 			}
 		}
 
 		if c.neighbour[e] != -1 {
-			mpi.Recv_float64(&recvbuf, c.neighbour[e], 123, mpi.COMM_WORLD)
+			mpi.Recv_float64(recvbuf, c.neighbour[e], 123, mpi.COMM_WORLD)
 			//mpi.Wait(&request1, &status)
 			fmt.Println("recv---", rank, c.neighbour[e], recvbuf)
 		}
 		if c.neighbour[d] != -1 {
 			fmt.Println("send---", rank, c.neighbour[d], sendbuf)
-			mpi.Send_float64(&sendbuf, c.neighbour[d], 123, mpi.COMM_WORLD)
+			mpi.Send_float64(sendbuf, c.neighbour[d], 123, mpi.COMM_WORLD)
 			//mpi.Wait(&request2, &status)
 		}
 
 		if c.neighbour[e] != -1 {
 			for i := 0; i < c.npts[e]; i++ {
-				(*data)[c.recv[e][i]] = recvbuf[i]
+				data[c.recv[e][i]] = recvbuf[i]
 			}
 		}
 
@@ -387,7 +387,7 @@ func (box *Box) interpolate(pos [3]float64, data []float64) (float64, bool) {
 		for j := 0; j < 2; j++ {
 			for i := 0; i < 2; i++ {
 				ijk := (n[0] + i) + (n[1]+j)*box.nxyz[0] + (n[2]+k)*box.nxyz[0]*box.nxyz[1]
-				v[i][j][k] = (*data)[ijk]
+				v[i][j][k] = data[ijk]
 			}
 		}
 	}
