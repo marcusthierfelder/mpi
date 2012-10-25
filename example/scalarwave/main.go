@@ -17,8 +17,8 @@ type Grid struct {
 	gh         int        // number of ghosts
 	time       float64    // time ...
 
-	box   Box        // local informations
-	field [](*Field) // data storage
+	box   Box     // local informations
+	field []Field // data storage
 }
 type Box struct {
 	xyz0, xyz1 [3]float64
@@ -37,10 +37,6 @@ type Comm struct {
 	neighbour  [6]int   // number of touching processor
 	npts       [6]int   // number of points which have to be syncd
 	send, recv [6][]int // stack of position(ijk) to sync efficiently 
-}
-
-type VarList struct {
-	f1, f2 []float64
 }
 
 func main() {

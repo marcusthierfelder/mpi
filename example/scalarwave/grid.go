@@ -280,10 +280,10 @@ func (grid *Grid) init() {
 	grid.AddVar("f", true)
 	grid.AddVar("g", true)
 
-	xp := *grid.GetVar("x")
-	yp := *grid.GetVar("y")
-	zp := *grid.GetVar("z")
-	f := *grid.GetVar("f")
+	xp := grid.GetVar("x")
+	yp := grid.GetVar("y")
+	zp := grid.GetVar("z")
+	f  := grid.GetVar("f")
 
 	ijk := 0
 	for k := 0; k < grid.box.nxyz[2]; k++ {
@@ -307,7 +307,7 @@ func (grid *Grid) sync_all() {
 
 }
 
-func (grid *Grid) sync_one(data *[]float64) {
+func (grid *Grid) sync_one(data []float64) {
 	c := grid.box.comm
 	mpi.Barrier(mpi.COMM_WORLD)
 
@@ -360,7 +360,7 @@ func (box *Box) inside(pos [3]float64) bool {
 	return true
 }
 
-func (box *Box) interpolate(pos [3]float64, data *[]float64) (float64, bool) {
+func (box *Box) interpolate(pos [3]float64, data []float64) (float64, bool) {
 
 	//fmt.Println(box.xyz0, box.xyz1, pos)
 
