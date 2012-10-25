@@ -33,16 +33,16 @@ func main() {
 	if left < 0 {
 		left = size - 1
 	}
-	mpi.Irecv_int(&rb, left, 123, mpi.COMM_WORLD, &request)
-	mpi.Isend_int(&sb, right, 123, mpi.COMM_WORLD, &request2)
+	mpi.Irecv_int(rb, left, 123, mpi.COMM_WORLD, &request)
+	mpi.Isend_int(sb, right, 123, mpi.COMM_WORLD, &request2)
 	mpi.Wait(&request, &status)
 	mpi.Wait(&request2, &status)
 
 	fmt.Println(sb, rb)
 
 
-	mpi.Irecv_float64(&rbf, left, 1234, mpi.COMM_WORLD, &request)
-	mpi.Isend_float64(&sbf, right, 1234, mpi.COMM_WORLD, &request2)
+	mpi.Irecv_float64(rbf, left, 1234, mpi.COMM_WORLD, &request)
+	mpi.Isend_float64(sbf, right, 1234, mpi.COMM_WORLD, &request2)
 	mpi.Wait(&request, &status)
 	mpi.Wait(&request2, &status)
 

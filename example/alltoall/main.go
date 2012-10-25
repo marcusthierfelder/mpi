@@ -21,7 +21,7 @@ func main() {
 		rb[i] = 0
 	}
 
-	mpi.Alltoall_int(&sb, &rb, mpi.COMM_WORLD)
+	mpi.Alltoall_int(sb, rb, mpi.COMM_WORLD)
 
 	fmt.Println(sb, rb)
 
