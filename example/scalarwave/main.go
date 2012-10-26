@@ -7,7 +7,7 @@ import (
 
 var (
 	testMPI    bool = false
-	rank, size int  = 0, 8
+	rank, size int  = 0, 1
 	proc0      bool = false
 )
 
@@ -27,6 +27,7 @@ type Box struct {
 	noff       [3]int
 
 	comm Comm
+	grid *Grid
 }
 type Field struct {
 	name string
@@ -37,6 +38,11 @@ type Comm struct {
 	neighbour  [6]int   // number of touching processor
 	npts       [6]int   // number of points which have to be syncd
 	send, recv [6][]int // stack of position(ijk) to sync efficiently 
+}
+
+type VarList struct {
+	field []*Field
+	grid  *Grid
 }
 
 func main() {
@@ -58,9 +64,11 @@ func main() {
 	grid.create()
 	grid.init()
 
-	grid.sync_all()
+	vl := grid.initialdata()
+	grid.rk4_init(vl)
+	//grid.sync_all()
 
-	grid.output()
+	//grid.output()
 
 	if testMPI == false {
 		mpi.Finalize()

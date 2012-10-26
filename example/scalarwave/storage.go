@@ -6,8 +6,9 @@ import (
 	_ "reflect"
 )
 
-/* storage stuff */
+/* variable storage stuff */
 func (grid *Grid) AddVar(name string, sync bool) {
+	fmt.Println("AddVar: ", name)
 
 	if false {
 		fmt.Println(grid.field, len(grid.field))
@@ -25,11 +26,16 @@ func (grid *Grid) AddVar(name string, sync bool) {
 }
 
 func (grid *Grid) GetVar(name string) []float64 {
+	ptr := grid.GetField(name)
+	return ptr.data
+}
 
-	var ptr []float64
+func (grid *Grid) GetField(name string) *Field {
+	var ptr *Field
+
 	for _, f := range grid.field {
 		if f.name == name {
-			ptr = (f.data)
+			ptr = &f
 		}
 	}
 
@@ -39,17 +45,41 @@ func (grid *Grid) GetVar(name string) []float64 {
 	return ptr
 }
 
+func (grid *Grid) PrintVars() {
+	fmt.Println("Variables:")
+	for i, v := range grid.field {
+		fmt.Println("  ", i, v.name)
+	}
+}
+
 /* varlist stuff */
-type VarList struct {
-	stack [][]float64
+func (grid *Grid) vlalloc() VarList {
+	var vl VarList
+	vl.grid = grid
+
+	return vl
 }
 
-func (vl *VarList) AddVar(data []float64) {
-	l := len(vl.stack)
-	tmp := make([][]float64, l+1)
-	copy(tmp, vl.stack)
-	vl.stack = tmp
+func (vl *VarList) AddVar(name string) {
+	l := len(vl.field)
+	tmp := make([]*Field, l+1)
+	copy(tmp, vl.field)
+	vl.field = tmp
+
+	vl.field[l] = vl.grid.GetField(name)
+}
+
+func (vl *VarList) GetVar(i int) []float64 {
+	if i >= len(vl.field) {
+		log.Fatal("GetVar, number out of list")
+	}
+	return vl.field[i].data
 }
 
 
-
+func (vl *VarList) PrintVars() {
+	fmt.Println("VarList:")
+	for i, v := range vl.field {
+		fmt.Println("  ", i, v.name)
+	}
+}

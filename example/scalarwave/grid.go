@@ -6,7 +6,7 @@ import (
 	"log"
 	"math"
 
-	_"os"
+	_ "os"
 )
 
 var (
@@ -277,13 +277,10 @@ func (grid *Grid) init() {
 	grid.AddVar("x", false)
 	grid.AddVar("y", false)
 	grid.AddVar("z", false)
-	grid.AddVar("f", true)
-	grid.AddVar("g", true)
 
 	xp := grid.GetVar("x")
 	yp := grid.GetVar("y")
 	zp := grid.GetVar("z")
-	f  := grid.GetVar("f")
 
 	ijk := 0
 	for k := 0; k < grid.box.nxyz[2]; k++ {
@@ -292,8 +289,6 @@ func (grid *Grid) init() {
 				xp[ijk] = grid.box.xyz0[0] + float64(i)*grid.box.dxyz[0]
 				yp[ijk] = grid.box.xyz0[1] + float64(j)*grid.box.dxyz[1]
 				zp[ijk] = grid.box.xyz0[2] + float64(k)*grid.box.dxyz[2]
-
-				f[ijk] = xp[ijk]*xp[ijk] + 1.
 
 				ijk++
 			}
@@ -314,7 +309,7 @@ func (grid *Grid) sync_one(data []float64) {
 	/* go through all 6 sides seperatly, first x-dir both sides,
 	then the other sides */
 	for d := 0; d < 6; d++ {
-		e := (d/2)*2 + 1 - d%2;
+		e := (d/2)*2 + 1 - d%2
 
 		// fist one direction
 		sendbuf := make([]float64, c.npts[d])
