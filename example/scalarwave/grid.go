@@ -115,12 +115,10 @@ func splitGrid(nxyz [3]int, nproc int) ([][]int, [3]int) {
 
 func (grid *Grid) create() {
 	defer un(trace("createGrid"))
-	fmt.Println(rank, size, proc0)
+	//fmt.Println(rank, size, proc0)
 
-	//size := 8 //mpi.Comm_size(mpi.COMM_WORLD)
-	//rank := 7 //mpi.Comm_rank(mpi.COMM_WORLD)
 	g, nijk := splitGrid(grid.nxyz, size)
-	fmt.Println(g, nijk)
+	//fmt.Println(g, nijk)
 
 	// set box sizes for each processor
 	grid.box.nxyz[0] = g[rank][0] + 2*grid.gh
@@ -150,7 +148,16 @@ func (grid *Grid) create() {
 	grid.box.xyz0[2] -= grid.dxyz[2] * float64(grid.gh)
 	grid.box.xyz1[2] = grid.box.xyz0[2] + float64(grid.box.nxyz[2]-1)*grid.dxyz[2]
 
-	fmt.Println(grid.box)
+	//fmt.Println(grid.box)
+
+	// helpers
+	for i := 0; i < 3; i++ {
+		grid.box.oodx[i] = 1. / grid.box.dxyz[i]
+		grid.box.oodx2[i] = 1. / (grid.box.dxyz[i] * grid.box.dxyz[i])
+	}
+	grid.box.di = 1
+	grid.box.dj = grid.box.nxyz[0]
+	grid.box.dk = grid.box.nxyz[0] * grid.box.nxyz[1]
 
 	// find neighbours
 	i := rank % nijk[0]
@@ -299,7 +306,12 @@ func (grid *Grid) init() {
 /* pure mpi synchronization */
 func (grid *Grid) sync_all() {
 	grid.sync_one(grid.GetVar("f"))
+}
 
+func (grid *Grid) sync_vl(vl VarList) {
+	for _, v := range vl.field {
+		grid.sync_one(v.data)
+	}
 }
 
 func (grid *Grid) sync_one(data []float64) {

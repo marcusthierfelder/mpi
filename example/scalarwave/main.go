@@ -26,6 +26,9 @@ type Box struct {
 	nxyz       [3]int
 	noff       [3]int
 
+	di, dj, dk  int
+	oodx, oodx2 [3]float64
+
 	comm Comm
 	grid *Grid
 }
@@ -60,12 +63,16 @@ func main() {
 	grid.dxyz = [3]float64{1, 1, 1}
 	grid.xyz0 = [3]float64{0., 0., 0.}
 	grid.gh = 1
+	dt := 0.1
 
 	grid.create()
 	grid.init()
 
 	vl := grid.initialdata()
 	grid.rk4_init(vl)
+
+	grid.rk4(vl, dt)
+
 	//grid.sync_all()
 
 	//grid.output()

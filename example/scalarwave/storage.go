@@ -76,7 +76,6 @@ func (vl *VarList) GetVar(i int) []float64 {
 	return vl.field[i].data
 }
 
-
 func (vl *VarList) PrintVars() {
 	fmt.Println("VarList:")
 	for i, v := range vl.field {
