@@ -68,6 +68,9 @@ func (grid *Grid) rhs(uc VarList, r VarList) {
 
 					rf[ijk] = g[ijk]
 					rg[ijk] = laplace
+				} else {
+					rf[ijk] = 0.
+					rg[ijk] = 0.
 				}
 				ijk++
 			}
