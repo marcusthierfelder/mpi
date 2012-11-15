@@ -33,9 +33,12 @@ func (grid *Grid) GetVar(name string) []float64 {
 func (grid *Grid) GetField(name string) *Field {
 	var ptr *Field
 
-	for _, f := range grid.field {
+	ptr = nil
+	for i, f := range grid.field {
 		if f.name == name {
-			ptr = &f
+			ptr = &(grid.field[i])
+			// this DOES NOT WORK, why?
+			// ptr =&f
 		}
 	}
 

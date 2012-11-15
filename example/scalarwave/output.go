@@ -13,6 +13,7 @@ func (grid *Grid) output() {
 	defer un(trace("output"))
 
 	grid.output_1d("f", "f.x", 0)
+	grid.output_1d("g", "g.x", 0)
 }
 
 /* this a a very slow and lazy implementation for x-direction */
@@ -30,7 +31,7 @@ func (grid *Grid) output_1d(data string, file string, d int) {
 		v, b := grid.box.interpolate(pos, ptr)
 		buffer[i], buffer[grid.nxyz[d]+i] = v, float64(btoi(b))
 	}
-	fmt.Println(rank, buffer[:grid.nxyz[d]])
+	//fmt.Println(rank, x,buffer[:grid.nxyz[d]])
 
 	/* find data using interpolation */
 	recvbuf := make([]float64, 2*grid.nxyz[d])

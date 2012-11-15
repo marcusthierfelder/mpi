@@ -12,8 +12,8 @@ var (
 /* intial data */
 func (grid *Grid) initialdata() VarList {
 	defer un(trace("initaldata"))
-	grid.AddVar("f", false)
-	grid.AddVar("g", false)
+	grid.AddVar("f", true)
+	grid.AddVar("g", true)
 
 	vl := grid.vlalloc()
 	vl.AddVar("f")
@@ -32,7 +32,7 @@ func (grid *Grid) initialdata() VarList {
 			for i := 0; i < box.nxyz[0]; i++ {
 				r := math.Sqrt(x[ijk]*x[ijk] + y[ijk]*y[ijk] + z[ijk]*z[ijk])
 
-				f[ijk] = math.Exp(-r * r * 5.)
+				f[ijk] = math.Exp(-r * r)
 				g[ijk] = 0.
 
 				ijk++
@@ -44,7 +44,7 @@ func (grid *Grid) initialdata() VarList {
 }
 
 /* rhs computation */
-func (grid *Grid) rhs(uc VarList, r VarList) {
+func (grid *Grid) rhs(r VarList, uc VarList) {
 
 	box := grid.box
 	f := uc.GetVar(0)
@@ -61,21 +61,26 @@ func (grid *Grid) rhs(uc VarList, r VarList) {
 		for j := 0; j < box.nxyz[1]; j++ {
 			for i := 0; i < box.nxyz[0]; i++ {
 
-				if box.innerpoint(i,j,k) {
-
+				if box.innerpoint(i, j, k) {
+					// second order laplacian
 					laplace := box.oodx2[0] * (-6.*f[ijk] +
 						f[ijk-di] + f[ijk+di] + f[ijk-dj] + f[ijk+dj] + f[ijk-dk] + f[ijk+dk])
 
 					rf[ijk] = g[ijk]
 					rg[ijk] = laplace
+
 				} else {
+					// simple boundary condition
 					rf[ijk] = 0.
 					rg[ijk] = 0.
+
 				}
 				ijk++
 			}
 		}
 	}
+
+	grid.sync_vl(r)
 }
 
 /* helper functions for the time integrator */

@@ -9,6 +9,7 @@ var (
 	testMPI    bool = false
 	rank, size int  = 0, 1
 	proc0      bool = false
+	stdout     string
 )
 
 type Grid struct {
@@ -54,14 +55,16 @@ func main() {
 		mpi.Init()
 		size = mpi.Comm_size(mpi.COMM_WORLD)
 		rank = mpi.Comm_rank(mpi.COMM_WORLD)
+
+		mpi.Redirect_STDOUT(mpi.COMM_WORLD)
 	}
 	proc0 = rank == 0
 	fmt.Println(rank, proc0)
 
 	var grid Grid
-	grid.nxyz = [3]int{21, 6, 6}
+	grid.nxyz = [3]int{11, 11, 11}
 	grid.dxyz = [3]float64{1, 1, 1}
-	grid.xyz0 = [3]float64{0., 0., 0.}
+	grid.xyz0 = [3]float64{-5., -5., -5.}
 	grid.gh = 1
 	dt := 0.1
 
@@ -71,11 +74,18 @@ func main() {
 	vl := grid.initialdata()
 	grid.rk4_init(vl)
 
-	grid.rk4(vl, dt)
+	grid.output()
 
-	//grid.sync_all()
+	for ti := 0; ti < 1; ti++ {
+		if proc0 {
+			fmt.Printf("  %4d      %2.4f\n", ti, grid.time)
+		}
+		grid.rk4(vl, dt)
+		grid.time += dt
+		//grid.sync_all()
 
-	//grid.output()
+		//grid.output()
+	}
 
 	if testMPI == false {
 		mpi.Finalize()
