@@ -1,7 +1,9 @@
 mpi
 ===
 mpi-binding package for golang. It is created and tested for openmpi and
-should work with all other mpi libraries.
+should work with all other mpi libraries. Only a small fraction of  methods
+are already implemented... more are comming if needed. The names are quite
+similar to the mpi-library and they should do the same.
 
 It is tested for golang go1.0.2,go1.0.3 and Open MPI v1.6.2
 see
@@ -14,7 +16,6 @@ Quick Usage
 ===========
 
 	go get github.com/marcusthierfelder/mpi
-
 
 
 
@@ -36,6 +37,8 @@ On some machines the compiler does not use LD_LIBRARY_PATH, then try:
 
 	export LIBRARY_PATH=/usr/lib/openmpi/lib
 
+To start a parallel job on 4 cores do:
+    mpirun -np 4 my_prog
 
 
 
@@ -67,6 +70,11 @@ note: this is not optimised, but can be used to test clusters for scaling etc.
 
 
 
+Errors/Problems
+===============
+
+If something is wrong or not working or missing, feel free to contact me 
+or post an issue on github.com. 
 
 
 
