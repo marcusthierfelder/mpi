@@ -19,8 +19,8 @@ Quick Usage
 
 
 
-Detailed Usage
-==============
+Detailed Usage (linux)
+======================
 In order to generate the binding library you need to install mpi on you system.
 On ubuntu/debain use:
 
@@ -39,6 +39,25 @@ On some machines the compiler does not use LD_LIBRARY_PATH, then try:
 
 To start a parallel job on 4 cores do:
     mpirun -np 4 my_prog
+
+
+
+Detailed Usage (mac osx)
+========================
+You need gcc in order to compile mpi and bind it to golang. Easiest way to get gcc is by
+installing xcode and and the command line tools (xcode -> preferences -> downloads). 
+Afterwards gcc should work.
+
+To install mpi use this page:
+
+	https://sites.google.com/site/dwhipp/tutorials/installing-open-mpi-on-mac-os-x
+
+or in short, download the newest version of openmpi (currently it is 1.6.5) and 
+untar it somewhere. Use the terminal and go into the folder
+
+	./configure
+	make
+	sudo make install
 
 
 
