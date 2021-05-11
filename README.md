@@ -52,7 +52,7 @@ To install mpi use this page:
 
 	https://sites.google.com/site/dwhipp/tutorials/installing-open-mpi-on-mac-os-x
 
-or in short, download the newest version of openmpi (currently it is 1.6.5) and 
+or in short, download the newest version of openmpi (currently it is 4.1.1) and 
 untar it somewhere. Use the terminal and go into the folder
 
 	./configure
@@ -60,14 +60,13 @@ untar it somewhere. Use the terminal and go into the folder
 	sudo make install
 
 
-
 Examples
 ========
 
-### simple:
+### helloworld:
 
-simple example which writes the rank of each processor and the 
-total number of mpi-jobs
+helloworld example where each process writes hello world, its the rank and the 
+total number of mpi ranks
 
 ### alltoall:
 
